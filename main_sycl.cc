@@ -47,15 +47,13 @@ int main(int argc, char **argv) {
         auto access = buffer.get_access<access::mode::read_write>(command_group_handler);
 
         range<2> work_groups(2, 2);
-        stream out(4096, 120, command_group_handler);
         command_group_handler.parallel_for_work_group<class matrix_map_g>(
-                work_groups,
+                work_groups, range<2>(2,2),
                 [=](group<2> group_id) {
 
                     auto group_row = group_id.get(0);
                     auto group_col = group_id.get(1);
                     Generator<float> device_generator(0, 4);
-
                     parallel_for_work_item(group_id, [&](item<2> item_id) {
                         for (size_t row_offset = 0; row_offset < group_id.get_group_range()[0]; ++row_offset) {
                             for (size_t col_offset = 0; col_offset < group_id.get_group_range()[1]; ++col_offset) {
